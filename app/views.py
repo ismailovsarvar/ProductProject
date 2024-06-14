@@ -1,7 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
-from app.forms import ProductModelForm
-from app.models import Product
+from app.forms import ProductModelForm, CustomerAddForm
+from app.models import Product, Customer
+
+
+# from django.urls import reverse_lazy
+# from django.views.generic import ListView, UpdateView, DeleteView
 
 
 # Create your views here.
@@ -57,3 +61,55 @@ def add_product(request):
         'form': form,
     }
     return render(request, 'app/add-product.html', context)
+
+
+# CUSTOMER VIEWS
+def customer_list(request):
+    customers = Customer.objects.all()
+    context = {
+        'customers': customers,
+        'add_customer': add_customer,
+        'update_form': CustomerUpdateForm(),
+        'delete_form': CustomerDeleteForm()
+    }
+    return render(request, 'app/customers.html', context)
+
+
+def add_customer(request):
+    form = CustomerAddForm()
+    if request.method == 'POST':
+        form = CustomerAddForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('add_customer')
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'app/customers.html', context)
+
+
+# def update_customer(request, customer_id):
+#     customer = get_object_or_404(Customer, id=customer_id)
+#     if request.method == 'POST':
+#         form = CustomerUpdateForm(request.POST, instance=customer)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('customer_list')
+#     else:
+#         form = CustomerUpdateForm(instance=customer)
+#         context_1 = {
+#             'form': form,
+#         }
+#     return render(request, 'app/customer_update.html', context_1)
+#
+#
+# def delete_customer(request):
+#     if request.method == 'POST':
+#         form = CustomerDeleteForm(request.POST)
+#         if form.is_valid():
+#             customer_id = form.cleaned_data['customer_id']
+#             customer = get_object_or_404(Customer, id=customer_id)
+#             customer.delete()
+#             return redirect('customer_list')
+#     return redirect('customer_list')

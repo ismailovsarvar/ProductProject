@@ -65,3 +65,22 @@ class ProductAttribute(models.Model):
 
     def __str__(self):
         return self.product.name
+
+
+# CUSTOMER MODEL
+class Customer(models.Model):
+    name = models.CharField(max_length=100, null=True)
+    email = models.EmailField(null=True)
+    phone = models.CharField(max_length=100, null=True)
+    address = models.CharField(max_length=255, null=True)
+    joined = models.DateTimeField(auto_now_add=True, null=True)
+
+    def get_attributes(self) -> list[dict]:
+        product_attributes = ProductAttribute.objects.filter(product=self)
+        attributes = []
+        for product_attributes in product_attributes:
+            attributes.append({
+                'attribute_key': product_attributes.attribute.key_name,
+                'attribute_value': product_attributes.attribute_value.value_name
+            })  # [{}, {}, {}]
+        return attributes
